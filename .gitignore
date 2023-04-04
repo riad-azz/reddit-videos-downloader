@@ -1,6 +1,7 @@
 node_modules/
+venv/
+.vscode
 *.db
 **__pycache__
-venv/
 **gen/
 **.webassets-cache/

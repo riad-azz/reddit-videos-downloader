@@ -3,13 +3,12 @@ from flask import (
     render_template,
     flash,
     request,
-    send_from_directory,
     url_for,
     redirect,
     make_response,
     abort,
 )
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_required, login_user, logout_user, current_user
 
 # App modules
 from app import app, db, login_manager
@@ -17,15 +16,7 @@ from app.models import User
 from app.forms import RegisterForm, LoginForm
 
 
-@app.after_request
-def add_header(response):
-    # If the request is for a static file
-    if request.path.startswith("/static/"):
-        # Set the cache control header to cache the file for 1 year
-        response.headers["Cache-Control"] = "public, max-age=31536000"
-    return response
-
-
+# MIDDLEWARE
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -39,16 +30,14 @@ def unauthorized():
     return redirect(redirect_url)
 
 
-@app.route("/logout")
-def logout():
-    if not current_user.is_authenticated:
-        return redirect(url_for("home_page"))
-
-    logout_user()
-    flash("You have been logged out.", category="info")
-    return redirect(url_for("home_page"))
+@app.after_request
+def add_header(response):
+    if request.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000"
+    return response
 
 
+# ROUTING
 @app.route("/")
 def home_page():
     return render_template("home.html")
@@ -97,6 +86,17 @@ def signup_page():
     return render_template("auth/register.html", form=form)
 
 
+@app.route("/logout")
+def logout():
+    if not current_user.is_authenticated:
+        return redirect(url_for("home_page"))
+
+    logout_user()
+    flash("You have been logged out.", category="info")
+    return redirect(url_for("home_page"))
+
+
+# AJAX
 @app.route("/set-theme/<theme>", methods=["GET"])
 def set_theme(theme: str):
     allowed_themes = ("dark", "light")

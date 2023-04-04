@@ -1,7 +1,12 @@
+# Flask modules
+from flask_assets import Environment, Bundle
+
+# Other modules
 import os
 import shutil
+
+# App modules
 from app import app
-from flask_assets import Environment, Bundle
 
 assets = Environment(app)
 assets.cache = True
@@ -38,7 +43,7 @@ assets.register(
     ),
 )
 
-# Clear the Flask-Assets cache
+# CLEAR FLASK-ASSETS CACHE
 CACHE_DIR = os.path.join(app.static_folder, ".webassets-cache")
 if os.path.exists(CACHE_DIR):
     shutil.rmtree(CACHE_DIR)
