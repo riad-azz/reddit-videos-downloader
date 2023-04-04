@@ -1,6 +1,6 @@
 node_modules/
 venv/
-.vscode
+.vscode/
 *.db
 **__pycache__
 **gen/
