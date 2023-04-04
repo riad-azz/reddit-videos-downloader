@@ -2,3 +2,5 @@ node_modules/
 *.db
 **__pycache__
 venv/
+**gen/
+**.webassets-cache/

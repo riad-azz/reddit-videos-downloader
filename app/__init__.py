@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
+from flask_assets import Environment, Bundle
 
 # Other modules
 from os import path
@@ -15,12 +16,16 @@ TEMPLATE_DIR = path.join(BASE_DIR, "templates")
 app = Flask(
     __name__,
     static_folder=STATIC_DIR,
-    static_url_path="",
+    static_url_path="/static/",
     template_folder=TEMPLATE_DIR,
 )
 
+# Assets
+from app import assets
+
 # App Configs
-app.config["TESTING"] = True
+app.config["DEBUG"] = False
+app.config["ASSETS_DEBUG"] = app.config["DEBUG"]
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR}/database/database.db"
 app.config["SECRET_KEY"] = "YOUR_SECRET_KEY"
 

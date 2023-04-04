@@ -1,6 +1,11 @@
 <!-- Logo -->
-{%- macro logo(text="Logo name", href="#", src="/images/logo.png") -%}
-  <a href="{{ href }}" class="flex items-center md:mr-12">
+{%- macro logo(text="Logo name", href="#", src="/static/images/logo.png") -%}
+  <a
+    href="{{ href }}"
+    title="{{ text }} Logo"
+    aria-label="{{ text }} Logo"
+    class="flex items-center md:mr-12"
+  >
     <img src="{{ src }}" class="mr-2 h-8" aria-label="Logo image" />
     <span
       class="self-center text-xl font-bold whitespace-nowrap dark:text-white"
@@ -11,6 +16,8 @@
 <!-- Mobile menu button -->
 {%- macro burgerButton(id="burger-button") -%}
   <button
+    title="Dropdown menu button"
+    aria-label="Dropdown menu button"
     id="{{ id }}"
     class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
   >
@@ -43,36 +50,28 @@
 {%- macro themeButton(text="Change theme", id="theme-button") -%}
   <button
     id="theme-button"
+    title="Change them (Dark/Light)"
+    aria-label="Change them (Dark/Light)"
     class="flex justify-between py-1.5 px-4 md:p-1 md:items-center md:justify-center md:w-10 md:h-10 md:rounded-full text-white bg-[#1e293b] hover:bg-[#64748b] dark:text-black dark:bg-[#fafaf9] dark:hover:bg-[#e7e5e4] rounded"
   >
     <span class="md:hidden">{{ text }}</span>
-    <img
-      id="light-icon"
-      class="hidden w-8 h-8"
-      src="/images/svg/sun-icon.svg"
-    />
-    <img
-      id="dark-icon"
-      class="hidden w-8 h-8"
-      src="/images/svg/moon-icon.svg"
-    />
+    <svg
+      fill="currentColor"
+      height="24"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12 20V4C16.4183 4 20 7.58172 20 12C20 16.4183 16.4183 20 12 20Z"
+        fill="currentColor"
+      />
+    </svg>
     <script>
       // CHANGE THEM (DARK/LIGHT)
       try {
         (() => {
           const themeButton = document.getElementById("theme-button");
-          const lightIcon = document.getElementById("light-icon");
-          const darkIcon = document.getElementById("dark-icon");
-
-          const toggleThemeIcons = (theme) => {
-            if (theme === "light") {
-              darkIcon.classList.remove("hidden");
-              lightIcon.classList.add("hidden");
-            } else {
-              lightIcon.classList.remove("hidden");
-              darkIcon.classList.add("hidden");
-            }
-          };
 
           const toggleTheme = async () => {
             themeButton.disabled = true;
@@ -80,16 +79,10 @@
             const newTheme = document.documentElement.classList.contains("dark")
               ? "dark"
               : "light";
-            toggleThemeIcons(newTheme);
-            await fetch(`/set-theme/${newTheme}`);
+            fetch(`/set-theme/${newTheme}`);
             themeButton.disabled = false;
           };
 
-          toggleThemeIcons(
-            document.documentElement.classList.contains("dark")
-              ? "dark"
-              : "light"
-          );
           themeButton.onclick = toggleTheme;
         })();
       } catch (error) {
