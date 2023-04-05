@@ -1,29 +1,18 @@
 # Flask modules
 from flask import (
     abort,
+    request,
     make_response,
-    render_template,
     Blueprint,
 )
 
 
-pages_bp = Blueprint(
-    "pages", __name__, template_folder="templates", static_folder="static"
-)
+ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
 
 
-@pages_bp.route("/")
-def home_page():
-    return render_template("home.html")
-
-
-@pages_bp.route("/my-api")
-def api_page():
-    return render_template("api.html")
-
-
-@pages_bp.route("/set-theme/<theme>", methods=["GET"])
-def set_theme(theme: str):
+@ajax_bp.route("/set-theme", methods=["POST"])
+def set_theme():
+    theme = request.args.get("theme", "empty")
     allowed_themes = ("dark", "light")
     if theme.lower() not in allowed_themes:
         return abort(400, "Invalid theme")

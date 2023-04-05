@@ -24,6 +24,8 @@ app = Flask(
 # APP CONFIGS
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
+# APP EXTENSIONS
+from app import extensions
 
 # APP ROUTES
 from app.views import views_bp
@@ -33,6 +35,3 @@ app.register_blueprint(views_bp)
 from app.api import api_bp
 
 app.register_blueprint(api_bp)
-
-# APP EXTENSIONS
-from app import extensions
