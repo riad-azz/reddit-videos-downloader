@@ -4,7 +4,7 @@
   "description": "A simple flask app starter template with login/register ready. Using Isolated app directory structure.",
   "main": "index.js",
   "scripts": {
-    "start": "npx tailwindcss -i ./app/static/css/tailwind.css -o ./app/static/css/style.css --watch",
+    "start": "npx tailwindcss -i ./static/css/tailwind.css -o ./static/css/style.css --watch",
     "pretty": "npx prettier --write **/*.html"
   },
   "author": "",

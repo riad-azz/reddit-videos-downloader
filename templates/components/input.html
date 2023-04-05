@@ -1,0 +1,8 @@
+<!-- TEXT INPUT -->
+{%- macro textInput(name, id, placeholder="", value="") -%}
+  <label></label>
+  {{ form.username(class="form-control", placeholder="Enter username", autofocus=true, autocomplete="off") }}
+  {% if form.username.errors %}
+    <span class="mb-1 auth-error">{{ form.username.errors[0] }}</span>
+  {% endif %}
+{%- endmacro -%}
