@@ -4,7 +4,11 @@
 {% endblock title %}
 {% block content %}
   <h1 class="text-center mt-5">
-    Hello there {{ current_user.username.capitalize() }}, this is a flask
-    template.
+    {% if current_user.is_authenticated %}
+      Hello there {{ current_user.username.capitalize() }}, this is a flask
+      template.
+    {% else %}
+      Hello there, this is a flask template.
+    {% endif %}
   </h1>
 {% endblock content %}

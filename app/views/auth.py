@@ -42,7 +42,7 @@ def login_page():
     return render_template("auth/login.html", form=form)
 
 
-@auth_bp.route("/register", methods=["GET", "POST"])
+@auth_bp.route("/signup", methods=["GET", "POST"])
 def signup_page():
     if current_user.is_authenticated:
         return redirect(url_for("views.pages.home_page"))
@@ -65,7 +65,7 @@ def signup_page():
         )
         return redirect(url_for("views.pages.home_page"))
 
-    return render_template("auth/register.html", form=form)
+    return render_template("auth/signup.html", form=form)
 
 
 @auth_bp.route("/logout")
