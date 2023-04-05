@@ -1,18 +1,15 @@
 # Flask modules
-from flask import request
+from flask import current_app, request
 from flask_assets import Environment, Bundle
 
 # Other modules
 import os
 import shutil
 
-# App modules
-from app import app
-
-assets = Environment(app)
+assets = Environment(current_app)
 assets.cache = True
-assets.url = app.static_url_path
-assets.directory = app.static_folder
+assets.url = current_app.static_url_path
+assets.directory = current_app.static_folder
 
 # CSS BUNDLES
 assets.register(
@@ -45,14 +42,14 @@ assets.register(
 )
 
 # CLEAR FLASK-ASSETS CACHE
-CACHE_DIR = os.path.join(app.static_folder, ".webassets-cache")
+CACHE_DIR = os.path.join(current_app.static_folder, ".webassets-cache")
 if os.path.exists(CACHE_DIR):
     shutil.rmtree(CACHE_DIR)
 
 
 # CACHE STATIC FILES
-@app.after_request
-def add_header(response):
+@current_app.after_request
+def add_cache_header(response):
     if request.path.startswith("/static/"):
         response.headers["Cache-Control"] = "public, max-age=31536000"
     return response
