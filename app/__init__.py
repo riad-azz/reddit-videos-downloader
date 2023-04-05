@@ -1,8 +1,5 @@
 # Flask modules
-from flask import Flask, url_for
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_bcrypt import Bcrypt
+from flask import Flask
 
 # Other modules
 import os
@@ -25,24 +22,8 @@ app = Flask(
 )
 
 # APP CONFIGS
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR}/database/database.db"
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
-# DATABASE
-db = SQLAlchemy(app)
-# ENCRYPTION
-bcrypt = Bcrypt(app)
-# AUTHENTICATION
-login_manager = LoginManager(app)
-login_manager.login_view = "views.auth.login_page"
-login_manager.login_message = "Please sign in to continue."
-login_manager.login_message_category = "info"
-
-# APP MODELS
-from app import models
-
-with app.app_context():
-    db.create_all()
 
 # APP ROUTES
 from app.views import views_bp

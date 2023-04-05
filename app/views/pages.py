@@ -5,6 +5,7 @@ from flask import (
     render_template,
     Blueprint,
 )
+from flask_login import login_required
 
 
 pages_bp = Blueprint(
@@ -15,6 +16,11 @@ pages_bp = Blueprint(
 @pages_bp.route("/")
 def home_page():
     return render_template("home.html")
+
+
+@pages_bp.route("/my-api")
+def api_page():
+    return render_template("api.html")
 
 
 @pages_bp.route("/set-theme/<theme>", methods=["GET"])
