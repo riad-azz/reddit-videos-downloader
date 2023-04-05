@@ -23,7 +23,7 @@ auth_bp = Blueprint(
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login_page():
     if current_user.is_authenticated:
-        return redirect(url_for("auth.home_page"))
+        return redirect(url_for("views.pages.home_page"))
 
     form = LoginForm()
 
@@ -31,7 +31,7 @@ def login_page():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
-            redirect_url = request.args.get("next", url_for("auth.home_page"))
+            redirect_url = request.args.get("next", url_for("views.pages.home_page"))
             flash(
                 f'Success, you are signed in as "{user.username}".', category="success"
             )
@@ -45,7 +45,7 @@ def login_page():
 @auth_bp.route("/register", methods=["GET", "POST"])
 def signup_page():
     if current_user.is_authenticated:
-        return redirect(url_for("auth.home_page"))
+        return redirect(url_for("views.pages.home_page"))
 
     form = RegisterForm()
 
@@ -63,7 +63,7 @@ def signup_page():
             f'Success, your account has been created. You are now signed in as "{new_user.username}"',
             category="success",
         )
-        return redirect(url_for("auth.home_page"))
+        return redirect(url_for("views.pages.home_page"))
 
     return render_template("auth/register.html", form=form)
 
@@ -71,8 +71,8 @@ def signup_page():
 @auth_bp.route("/logout")
 def logout():
     if not current_user.is_authenticated:
-        return redirect(url_for("auth.home_page"))
+        return redirect(url_for("views.pages.home_page"))
 
     logout_user()
     flash("You have been logged out.", category="info")
-    return redirect(url_for("auth.home_page"))
+    return redirect(url_for("views.pages.home_page"))
