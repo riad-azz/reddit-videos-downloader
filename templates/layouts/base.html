@@ -25,7 +25,11 @@
     {% block scripts %}{% endblock scripts %}
     <!-- JAVASCRIPT DEFER -->
     {% assets "js_defer" %}
-      <script src="{{ ASSET_URL }}"></script>
+      <script
+        src="{{ ASSET_URL }}"
+        data-theme-url="{{ url_for('views.ajax.set_theme') }}"
+        data-csrf-token="{{ csrf_token() }}"
+      ></script>
     {% endassets %}
   </body>
 </html>

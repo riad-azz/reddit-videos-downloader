@@ -67,33 +67,5 @@
         fill="currentColor"
       />
     </svg>
-    <script>
-      // CHANGE THEM (DARK/LIGHT)
-      try {
-        (() => {
-          const themeButton = document.getElementById("theme-button");
-          const themeUrl = "{{ url_for('views.ajax.set_theme') }}";
-
-          const toggleTheme = async () => {
-            themeButton.disabled = true;
-            document.documentElement.classList.toggle("dark");
-            const newTheme = document.documentElement.classList.contains("dark")
-              ? "dark"
-              : "light";
-            fetch(`${themeUrl}?theme=${newTheme}`, {
-              method: "POST",
-              headers: {
-                "X-CSRFToken": "{{ csrf_token() }}",
-              },
-            });
-            themeButton.disabled = false;
-          };
-
-          themeButton.onclick = toggleTheme;
-        })();
-      } catch (error) {
-        console.error(error);
-      }
-    </script>
   </button>
 {%- endmacro -%}
