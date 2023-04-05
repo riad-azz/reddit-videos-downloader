@@ -2,7 +2,7 @@
 from flask_login import UserMixin
 
 # App modules
-from app import db, bcrypt
+from app import bcrypt, db
 
 
 class User(db.Model, UserMixin):
@@ -18,7 +18,9 @@ class User(db.Model, UserMixin):
 
     @password.setter
     def password(self, plain_password: str):
-        self.password_hash = bcrypt.generate_password_hash(plain_password).decode('utf-8')
+        self.password_hash = bcrypt.generate_password_hash(plain_password).decode(
+            "utf-8"
+        )
 
     def __repr__(self):
-        return f'<User {self.id}>'
+        return f"<User {self.id}>"

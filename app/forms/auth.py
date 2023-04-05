@@ -9,7 +9,7 @@ from wtforms.validators import ValidationError
 # App modules
 from app import bcrypt
 from app.models import User
-from app.validators import register_validators, login_validators
+from .validators import register_validators, login_validators
 
 
 # AUTH FORMS

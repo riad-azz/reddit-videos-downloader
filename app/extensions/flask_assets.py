@@ -1,4 +1,5 @@
 # Flask modules
+from flask import request
 from flask_assets import Environment, Bundle
 
 # Other modules
@@ -47,3 +48,11 @@ assets.register(
 CACHE_DIR = os.path.join(app.static_folder, ".webassets-cache")
 if os.path.exists(CACHE_DIR):
     shutil.rmtree(CACHE_DIR)
+
+
+# CACHE STATIC FILES
+@app.after_request
+def add_header(response):
+    if request.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000"
+    return response
