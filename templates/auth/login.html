@@ -1,39 +1,49 @@
 {% extends 'layouts/base.html' %}
+{% import 'components/input.html' as input %}
 {% block title %}
-  Home
+  Login
 {% endblock title %}
 {% block content %}
-  <div class="container text-center mt-4" style="max-width: 600px;">
-    <form class="auth-form border px-5 py-3 mx-auto text-left" method="POST">
+  <div class="max-w-xl p-4 mx-auto border-4 border-slate-600 rounded-lg">
+    <form class="mx-auto" method="POST">
       {{ form.hidden_tag() }}
 
-      <div class="h3 mb-3 font-weight-normal">Sign in to your account</div>
+      <h1 class="text-2xl mb-4 font-semibold">Login to your account</h1>
 
-      <div class="form-group">
-        {{ form.username.label() }}
-        {{ form.username(class="form-control", placeholder="Enter username", autofocus=true, autocomplete="off") }}
-        {% if form.username.errors %}
-          <span class="mb-1 auth-error">{{ form.username.errors[0] }}</span>
-        {% endif %}
+      {% if form.password.errors or form.username.errors %}
+        <div
+          class="w-full px-4 py-2 mb-2 bg-red-100 border border-red-400 rounded"
+        >
+          <span class="text-red-700"
+            >Invalid credentials, please try again.</span
+          >
+        </div>
+      {% endif %}
+
+      <div class="mb-2">
+        {{ input.text(name="username", id="username", label="Username", placeholder="Enter username", minlength="2", maxlength="30", required=true) }}
       </div>
 
-      <div class="form-group">
-        {{ form.password.label() }}
-        {{ form.password(class="form-control", placeholder="Enter password") }}
-        {% if form.password.errors %}
-          <span class="mb-1 auth-error">{{ form.password.errors[0] }}</span>
-        {% endif %}
+      <div class="mb-2">
+        {{ input.password(name="password", id="password", label="Password", placeholder="Enter password", required=true) }}
       </div>
 
-      <div class="mb-3">
-        <span>Do not have an account?</span>
-        <a class="span-link" href="{{ url_for('views.auth.signup_page') }}"
-          >Create account</a
+      <div class="mb-4">
+        <span>Don't have an account?</span>
+        <a
+          class="text-blue-500 hover:text-blue-600"
+          href="{{ url_for('views.auth.signup_page') }}"
+          >Sign up</a
         >
       </div>
 
-      <div class="d-flex w-100 justify-content-center">
-        {{ form.submit(class="btn btn-primary mt-2 w-50") }}
+      <div>
+        <button
+          type="submit"
+          class="w-full text-white font-semibold px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
+        >
+          <span>Login</span>
+        </button>
       </div>
     </form>
   </div>

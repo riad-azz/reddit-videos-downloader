@@ -15,5 +15,5 @@ def load_user(user_id):
 def unauthorized():
     flash("You must sign in first before you continue", category="info")
     target = request.url_rule.rule[1:]
-    redirect_url = url_for("auth.login_page") + f"?next=%2F{target}"
+    redirect_url = url_for("views.auth.login_page") + f"?next=%2F{target}"
     return redirect(redirect_url)
