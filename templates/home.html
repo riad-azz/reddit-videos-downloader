@@ -1,9 +1,25 @@
 {% extends 'layouts/base.html' %}
+{% import 'components/input.html' as input %}
+{% import 'components/button.html' as button %}
 {% block title %}
   Home
 {% endblock title %}
 {% block content %}
-  <h1 class="text-2xl text-center mt-5">
-    Hello there, this is a flask template. loooool
-  </h1>
+  <div class="max-w-2xl mx-auto">
+    <form
+      id="download-form"
+      method="POST"
+      action="/download/"
+      data-csrf-token="{{ csrf_token() }}"
+      class="flex gap-4"
+    >
+      {{ input.text(name="url", id="url", placeholder="e.g. https://www.reddit.com/r/funny/comments/12cl1x2/reddit_post_title") }}
+      {{ button.download(id="download-button") }}
+    </form>
+  </div>
 {% endblock content %}
+{% block scripts %}
+  {% assets "reddit_script" %}
+    <script src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+{% endblock scripts %}

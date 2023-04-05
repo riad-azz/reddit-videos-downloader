@@ -1,7 +1,5 @@
 # Flask modules
 from flask import (
-    abort,
-    make_response,
     render_template,
     Blueprint,
 )
@@ -10,12 +8,6 @@ from flask import (
 pages_bp = Blueprint(
     "pages", __name__, template_folder="templates", static_folder="static"
 )
-
-
-@pages_bp.after_request
-def add_security_headers(response):
-    response.headers["Content-Security-Policy"] = "default-src 'self'"
-    return response
 
 
 @pages_bp.route("/")

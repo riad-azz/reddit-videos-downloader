@@ -5,3 +5,4 @@ venv/
 **__pycache__
 **gen/
 **.webassets-cache/
+ffmpeg.exe

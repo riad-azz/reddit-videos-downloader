@@ -13,7 +13,7 @@
   };
 
   const userTheme = getCookie("theme");
-  console.log(userTheme);
+
   const colorSchemeQueryList = window.matchMedia(
     "(prefers-color-scheme: dark)"
   );
