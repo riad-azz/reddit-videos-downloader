@@ -24,11 +24,7 @@
     <div>
       {{ input.error(id="error-message") }}
 
-      <form
-        id="download-form"
-        data-csrf-token="{{ csrf_token() }}"
-        class="flex gap-4"
-      >
+      <form id="download-form" class="flex gap-4">
         {{ input.text(name="url", id="url", placeholder="Paste the reddit post link here...") }}
         {{ button.download(id="download-button") }}
         {{ button.loading(id="loading-button") }}
