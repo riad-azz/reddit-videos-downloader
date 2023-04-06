@@ -24,10 +24,16 @@ try {
       const json = await response.json();
 
       if (response.status != 200) {
-        print("lol");
         return showError(json.error);
       } else {
-        window.location = json.media;
+        const filename = json.media.substring(json.media.lastIndexOf("/") + 1);
+        const downloadUrl = URL.createObjectURL(new Blob([json.media]));
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
         hideError();
       }

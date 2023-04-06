@@ -4,13 +4,13 @@ from flask import (
     request,
     make_response,
     Blueprint,
-    send_from_directory,
     url_for,
 )
 
 # App modules
 from app.utils import json_response
-from app.utils import get_video_path, valid_reddit_post
+from app.utils import get_video_path
+from app.extensions.flask_limiter import limiter
 
 ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
 
@@ -21,6 +21,7 @@ def server_error(error):
 
 
 @ajax_bp.route("/download", methods=["POST"])
+@limiter.limit("5 per 1 minutes")
 async def download_reddit_video():
     url = request.args.get("url")
     if not url:
@@ -36,6 +37,7 @@ async def download_reddit_video():
 
 
 @ajax_bp.route("/set-theme", methods=["POST"])
+@limiter.exempt
 def set_theme():
     theme = request.args.get("theme", "empty")
     allowed_themes = ("dark", "light")
