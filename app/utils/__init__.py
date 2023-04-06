@@ -1,2 +1,2 @@
 from .response import json_response
-from .reddit import get_video_path, valid_reddit_post
+from .reddit import request_video, get_video_path

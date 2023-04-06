@@ -5,11 +5,11 @@ try {
     const downloadButton = document.getElementById("download-button");
     const loadingButton = document.getElementById("loading-button");
     const errorElement = document.getElementById("error-message");
-
     const downloadUrl = "/ajax/download?url=";
+    const requestUrl = "/ajax/request-video?url=";
 
     const showError = (error) => {
-      console.log(error);
+      error = error ?? "Something went wrong...";
       errorElement.style.display = "block";
       errorElement.textContent = error;
     };
@@ -24,34 +24,44 @@ try {
       loadingButton.classList.toggle("hidden");
     };
 
-    const handleResponse = async (response) => {
-      if (response.status === 200) {
-        const json = await response.json();
-        const filename = json.media.substring(json.media.lastIndexOf("/") + 1);
-        const mediaResponse = await fetch(json.media);
-        if (mediaResponse.status != 200) {
-          return showError(
-            "Too many download requests. please try again later (around 5 min)."
-          );
-        } else {
-          const mediaBlob = await mediaResponse.blob();
-          const downloadUrl = URL.createObjectURL(mediaBlob);
-          const link = document.createElement("a");
-          link.href = downloadUrl;
-          link.download = filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+    const downloadVideo = async (url) => {
+      const filename = url.substring(url.lastIndexOf("/") + 1);
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
 
-          hideError();
-        }
+    const fetchVideo = async (postUrl) => {
+      const downloadAjax = downloadUrl + postUrl;
+      const requestAjax = requestUrl + postUrl;
+      // Download the video if it exists on the server
+      const primaryRes = await fetch(downloadAjax);
+      const primaryJson = await primaryRes.json();
+      if (primaryJson.media) {
+        let mediaUrl = primaryJson.media;
+        await downloadVideo(mediaUrl);
+        hideError();
       } else {
-        try {
-          const json = await response.json();
-          return showError(json.error);
-        } catch (error) {
-          console.log(error);
-          return showError("Something went wrong...");
+        // Request the server to download the video and store it
+        const requestRes = await fetch(requestAjax);
+        if (requestRes.status === 429) {
+          return showError("Too many requests max limit reached (10 per hour)");
+        }
+        // Try to fetch the video again
+        const secondaryRes = await fetch(downloadAjax);
+        const secondaryJson = await secondaryRes.json();
+        if (secondaryJson.media) {
+          let mediaUrl = secondaryJson.media;
+          await downloadVideo(mediaUrl);
+          hideError();
+        } else {
+          showError(secondaryJson.error);
         }
       }
     };
@@ -61,15 +71,15 @@ try {
       toggleButton();
 
       const formData = new FormData(downloadForm);
-      const url = formData.get("url");
-      const requestUrl = downloadUrl + url;
+      const postUrl = formData.get("url");
 
       try {
-        await fetch(requestUrl).then((response) => handleResponse(response));
-      } catch (error) {
-        console.log(error);
-        showError("Something went wrong. Try again.");
+        await fetchVideo(postUrl);
+      } catch (e) {
+        console.error(e);
+        showError();
       }
+
       toggleButton();
     };
   })();

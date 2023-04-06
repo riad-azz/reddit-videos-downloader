@@ -25,13 +25,14 @@ def get_filename(post_url: str) -> str:
     return filename
 
 
-def valid_reddit_post(url: str) -> str | None:
+def validate_post_url(url: str) -> str:
     pattern = r"(?:https?://)?(?:www\.)?reddit\.com/r/\w+/comments/\w+/?"
     match = re.match(pattern, url)
     if match:
-        return match.group()
+        valid_url = match.group()
+        return valid_url
     else:
-        return None
+        raise Exception("Invalid reddit post url")
 
 
 def is_video_exist(filename: str) -> bool:
@@ -39,7 +40,7 @@ def is_video_exist(filename: str) -> bool:
     return os.path.exists(file_path)
 
 
-async def get_buffer(url: str) -> NamedTemporaryFile:
+async def get_media_buffer(url: str) -> NamedTemporaryFile:
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(
@@ -48,7 +49,7 @@ async def get_buffer(url: str) -> NamedTemporaryFile:
     return response.content
 
 
-async def get_json(url: str) -> dict:
+async def get_post_json(url: str) -> dict:
     json_url = url + ".json"
     headers = {
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
@@ -94,7 +95,7 @@ async def download_media(
     audio_file = NamedTemporaryFile(delete=False, suffix=".mp4", dir=TEMP_FOLDER)
     try:
         video_buffer, audio_buffer = await asyncio.gather(
-            get_buffer(video_url), get_buffer(audio_url)
+            get_media_buffer(video_url), get_media_buffer(audio_url)
         )
         video_file.write(video_buffer)
         audio_file.write(audio_buffer)
@@ -119,17 +120,22 @@ async def download_media(
         os.unlink(audio_file.name)
 
 
-async def get_video_path(post_url: str) -> str:
-    valid_url = valid_reddit_post(post_url)
-    if not valid_url:
-        raise Exception("Invalid reddit post url")
-
+async def get_video_path(post_url: str) -> str | None:
+    valid_url = validate_post_url(post_url)
     filename = get_filename(post_url)
+
     video_exist = is_video_exist(filename)
     if video_exist:
         return filename
+    else:
+        return None
 
-    post_json = await get_json(valid_url)
+
+async def request_video(post_url: str) -> str:
+    valid_url = validate_post_url(post_url)
+    filename = get_filename(post_url)
+
+    post_json = await get_post_json(valid_url)
     video_obj = format_video_json(post_json)
     video_url = video_obj["video_url"]
     audio_url = video_obj["audio_url"]
