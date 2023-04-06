@@ -19,4 +19,4 @@ limiter = Limiter(
 
 @current_app.errorhandler(429)
 def rate_limit_handler(error):
-    return json_response({"error": f"{error}. try again in later"}, 429)
+    return json_response({"error": f"{error}. try again in later."}, 429)

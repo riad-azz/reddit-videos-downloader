@@ -9,8 +9,8 @@ from tempfile import NamedTemporaryFile
 # App modules
 from app import BASE_DIR
 
-VIDEOS_FOLDER = os.path.join(BASE_DIR, "media/videos")
-TEMP_FOLDER = os.path.join(BASE_DIR, "media/temp")
+VIDEOS_FOLDER = BASE_DIR / "media/videos"
+TEMP_FOLDER = BASE_DIR / "media/temp"
 
 
 def sanitize_text(text: str) -> str:
@@ -42,7 +42,9 @@ def is_video_exist(filename: str) -> bool:
 async def get_buffer(url: str) -> NamedTemporaryFile:
     response = requests.get(url)
     if response.status_code != 200:
-        raise Exception("Could not fetch the video")
+        raise Exception(
+            f"{response.status_code} Could not fetch the video, Denied by reddit.com"
+        )
     return response.content
 
 
@@ -70,6 +72,10 @@ def format_video_json(post_obj: dict) -> dict:
     secure_media = post_data.get("secure_media")
     if not secure_media:
         raise Exception("This post does not provide secure video source.")
+
+    # media = post_data.get("media")
+    # if not media:
+    #     raise Exception("This post does not provide secure video source.")
 
     video_info = secure_media["reddit_video"]
     video_url = video_info["fallback_url"]

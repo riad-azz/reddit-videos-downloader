@@ -2,11 +2,10 @@
 try {
   (() => {
     const downloadForm = document.getElementById("download-form");
-    const downloadButton = document.getElementById("theme-button");
+    const downloadButton = document.getElementById("download-button");
+    const loadingButton = document.getElementById("loading-button");
     const errorElement = document.getElementById("error-message");
 
-    const formDataset = downloadForm.dataset;
-    const csrfToken = formDataset.csrfToken;
     const downloadUrl = "/ajax/download?url=";
 
     const showError = (error) => {
@@ -20,43 +19,55 @@ try {
       errorElement.textContent = "";
     };
 
+    const toggleButton = () => {
+      downloadButton.classList.toggle("hidden");
+      loadingButton.classList.toggle("hidden");
+    };
+
     const handleResponse = async (response) => {
       const json = await response.json();
 
       if (response.status != 200) {
-        return showError(json.error);
+        try {
+          return showError(json.error);
+        } catch (error) {
+          return showError("Something went wrong...");
+        }
       } else {
         const filename = json.media.substring(json.media.lastIndexOf("/") + 1);
-        const downloadUrl = URL.createObjectURL(new Blob([json.media]));
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const mediaResponse = await fetch(json.media);
+        if (mediaResponse.status != 200) {
+          return showError(
+            "Too many download requests. please try again later (around 5 min)."
+          );
+        } else {
+          const mediaBlob = await mediaResponse.blob();
+          const downloadUrl = URL.createObjectURL(mediaBlob);
+          const link = document.createElement("a");
+          link.href = downloadUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-        hideError();
+          hideError();
+        }
       }
     };
 
     downloadForm.onsubmit = async (event) => {
       event.preventDefault();
-      downloadButton.disabled = true;
+      toggleButton();
 
       const formData = new FormData(downloadForm);
       const url = formData.get("url");
       const requestUrl = downloadUrl + url;
 
-      await fetch(requestUrl, {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": csrfToken,
-        },
-      })
+      await fetch(requestUrl)
         .then((response) => handleResponse(response))
         .catch((error) => showError(error));
 
-      downloadButton.disabled = false;
+      toggleButton();
     };
   })();
 } catch (error) {

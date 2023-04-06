@@ -20,10 +20,10 @@ def server_error(error):
     return json_response({"error": "500 Internal server error"})
 
 
-@ajax_bp.route("/download", methods=["POST"])
-@limiter.limit("5 per 1 minutes")
+@ajax_bp.route("/download")
+@limiter.limit("20 per 1 minutes")
 async def download_reddit_video():
-    url = request.args.get("url")
+    url = request.args.get("url", "").strip()
     if not url:
         return json_response({"error": "No reddit post url was provided"}, 400)
 

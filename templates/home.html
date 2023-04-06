@@ -5,17 +5,35 @@
   Home
 {% endblock title %}
 {% block content %}
-  <div class="max-w-2xl mx-auto">
-    {{ input.error(id="error-message") }}
-
-    <form
-      id="download-form"
-      data-csrf-token="{{ csrf_token() }}"
-      class="flex gap-4"
+  <div class="container max-w-2xl mx-auto">
+    <div
+      class="flex flex-col items-center text-center mb-4 p-4 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg"
     >
-      {{ input.text(name="url", id="url", placeholder="e.g. https://www.reddit.com/r/funny/comments/12cl1x2/reddit_post_title") }}
-      {{ button.download(id="download-button") }}
-    </form>
+      <div
+        class="flex flex-wrap justify-center items-center w-full px-2 py-2 mb-2 bg-gray-200 dark:bg-gray-700 font-semibold rounded-lg"
+      >
+        <span class="tracking-wide mr-0.5">
+          https://www.reddit.com/r/AnimalsBeingJerks/comments/12cl004/chair/</span
+        >
+      </div>
+      <span
+        >Copy and paste the reddit post link that you would like to save the
+        video from like the example above then press Download</span
+      >
+    </div>
+    <div>
+      {{ input.error(id="error-message") }}
+
+      <form
+        id="download-form"
+        data-csrf-token="{{ csrf_token() }}"
+        class="flex gap-4"
+      >
+        {{ input.text(name="url", id="url", placeholder="Paste the reddit post link here...") }}
+        {{ button.download(id="download-button") }}
+        {{ button.loading(id="loading-button") }}
+      </form>
+    </div>
   </div>
 {% endblock content %}
 {% block scripts %}

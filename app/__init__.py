@@ -10,9 +10,13 @@ from app import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-MEDIA_DIR = os.path.join(BASE_DIR, "MEDIA")
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+STATIC_DIR = BASE_DIR / "static"
+MEDIA_DIR = BASE_DIR / "MEDIA"
+TEMPLATE_DIR = BASE_DIR / "templates"
+
+if not os.path.exists(BASE_DIR / "media"):
+    os.makedirs(BASE_DIR / "media/videos")
+    os.makedirs(BASE_DIR / "media/temp")
 
 
 def create_app(debug=False):
