@@ -7,17 +7,14 @@ from flask import (
     url_for,
 )
 
+
 # App modules
-from app.utils import json_response
-from app.utils import get_video_path, request_video
 from app.extensions.flask_limiter import limiter
+from app.utils.response import json_response
+from app.utils.reddit import get_video_path, download_video
+from app.utils.errors import BadRequest
 
 ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
-
-
-@ajax_bp.app_errorhandler(500)
-def server_error(error):
-    return json_response({"error": "Internal server error"})
 
 
 @ajax_bp.route("/download")
@@ -25,33 +22,16 @@ def server_error(error):
 async def download_reddit_video():
     url = request.args.get("url", "").strip()
     if not url:
-        return json_response({"error": "No reddit post url was provided"}, 400)
+        raise BadRequest("No reddit post url was provided.")
 
-    try:
-        media_path = await get_video_path(url)
-    except Exception as e:
-        return json_response({"error": "Problem fetching the requested video"}, 500)
-
-    if not media_path:
-        return json_response({"result": "File does not exist"}, 404)
-    else:
+    media_path = await get_video_path(url)
+    if media_path:
         media_url = url_for("views.media.media_url", filename=media_path)
-        return json_response({"media": media_url}, 200)
+        return json_response({"media": media_url})
 
-
-@ajax_bp.route("/request-video")
-@limiter.limit("10 per 1 hour")
-async def request_reddit_video():
-    url = request.args.get("url", "").strip()
-    if not url:
-        return json_response({"error": "No reddit post url was provided"}, 400)
-
-    try:
-        await request_video(url)
-    except Exception as e:
-        return json_response({"error": str(e)}, 500)
-
-    return json_response({"success": "ok"}, 200)
+    media_path = await download_video(url)
+    media_url = url_for("views.media.media_url", filename=media_path)
+    return json_response({"media": media_url})
 
 
 @ajax_bp.route("/set-theme", methods=["POST"])

@@ -5,11 +5,9 @@ try {
     const downloadButton = document.getElementById("download-button");
     const loadingButton = document.getElementById("loading-button");
     const errorElement = document.getElementById("error-message");
-    const downloadUrl = "/ajax/download?url=";
-    const requestUrl = "/ajax/request-video?url=";
 
     const showError = (error) => {
-      error = error ?? "Something went wrong...";
+      error = error ?? "Something went wrong. Make a guess !!";
       errorElement.style.display = "block";
       errorElement.textContent = error;
     };
@@ -38,33 +36,20 @@ try {
     };
 
     const fetchVideo = async (postUrl) => {
-      const downloadAjax = downloadUrl + postUrl;
-      const requestAjax = requestUrl + postUrl;
-      // Download the video if it exists on the server
-      const primaryRes = await fetch(downloadAjax);
-      const primaryJson = await primaryRes.json();
-      if (primaryJson.media) {
-        let mediaUrl = primaryJson.media;
-        await downloadVideo(mediaUrl);
-        hideError();
-      } else {
-        // Request the server to download the video and store it
-        const requestRes = await fetch(requestAjax);
-        const requestJson = await requestRes.json();
-        if (requestJson.error) {
-          return showError(requestJson.error);
-        }
-        // Try to fetch the video again
-        const secondaryRes = await fetch(downloadAjax);
-        const secondaryJson = await secondaryRes.json();
-        if (secondaryJson.media) {
-          let mediaUrl = secondaryJson.media;
-          await downloadVideo(mediaUrl);
-          hideError();
-        } else {
-          showError(secondaryJson.error);
-        }
-      }
+      const downloadAjax = "/ajax/download?url=" + postUrl;
+
+      await fetch(downloadAjax)
+        .then((response) => response.json())
+        .then(async (json) => {
+          const downloadUrl = json.media;
+          if (downloadUrl) {
+            await downloadVideo(downloadUrl);
+            hideError();
+          } else {
+            showError(json.error);
+          }
+        })
+        .catch((error) => showError(error));
     };
 
     downloadForm.onsubmit = async (event) => {

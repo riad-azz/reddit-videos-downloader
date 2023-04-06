@@ -1,13 +1,10 @@
 # Flask modules
 from flask import current_app
-from flask_limiter import Limiter, RateLimitExceeded
+from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-# Other modules
-from datetime import datetime
-
 # App modules
-from app.utils import json_response
+from app.utils.response import json_response
 
 limiter = Limiter(
     get_remote_address,
