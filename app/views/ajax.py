@@ -40,7 +40,7 @@ async def download_reddit_video():
 
 
 @ajax_bp.route("/request-video")
-@limiter.limit("1 per 1 hour")
+@limiter.limit("10 per 1 hour")
 async def request_reddit_video():
     url = request.args.get("url", "").strip()
     if not url:

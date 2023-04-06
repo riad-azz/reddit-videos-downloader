@@ -50,8 +50,9 @@ try {
       } else {
         // Request the server to download the video and store it
         const requestRes = await fetch(requestAjax);
-        if (requestRes.status === 429) {
-          return showError("Too many requests max limit reached (10 per hour)");
+        const requestJson = await requestRes.json();
+        if (requestJson.error) {
+          return showError(requestJson.error);
         }
         // Try to fetch the video again
         const secondaryRes = await fetch(downloadAjax);
