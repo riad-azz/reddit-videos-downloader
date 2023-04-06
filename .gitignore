@@ -6,4 +6,5 @@ venv/
 **gen/
 **.webassets-cache/
 ffmpeg.exe
-media/**
+**videos/
+**temp/
