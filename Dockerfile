@@ -19,9 +19,6 @@ COPY ./requirements.txt .
 # Intall packages
 RUN pip install -r requirements.txt
 
-# Install gunicorn
-RUN pip install gunicorn
-
 # Expose port 5000 for the Flask app
 EXPOSE 5000
 
