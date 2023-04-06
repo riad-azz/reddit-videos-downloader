@@ -43,7 +43,7 @@ async def get_buffer(url: str) -> NamedTemporaryFile:
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(
-            f"{response.status_code} Could not fetch the video, Denied by reddit.com"
+            f"{response.status_code} Could not fetch the video. Request denied by reddit.com"
         )
     return response.content
 
@@ -54,9 +54,10 @@ async def get_json(url: str) -> dict:
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
     }
     response = requests.get(json_url, headers=headers)
+    if response.status_code == 404:
+        raise Exception("404 Post was not found.")
     if response.status_code != 200:
-        print(response.status_code)
-        raise Exception("Could not fetch the video. Too many requests.")
+        raise Exception("Could not connect to reddit.com")
     return response.json()
 
 
@@ -72,10 +73,6 @@ def format_video_json(post_obj: dict) -> dict:
     secure_media = post_data.get("secure_media")
     if not secure_media:
         raise Exception("This post does not provide secure video source.")
-
-    # media = post_data.get("media")
-    # if not media:
-    #     raise Exception("This post does not provide secure video source.")
 
     video_info = secure_media["reddit_video"]
     video_url = video_info["fallback_url"]

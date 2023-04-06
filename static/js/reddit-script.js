@@ -25,15 +25,8 @@ try {
     };
 
     const handleResponse = async (response) => {
-      const json = await response.json();
-
-      if (response.status != 200) {
-        try {
-          return showError(json.error);
-        } catch (error) {
-          return showError("Something went wrong...");
-        }
-      } else {
+      if (response.status === 200) {
+        const json = await response.json();
         const filename = json.media.substring(json.media.lastIndexOf("/") + 1);
         const mediaResponse = await fetch(json.media);
         if (mediaResponse.status != 200) {
@@ -52,6 +45,14 @@ try {
 
           hideError();
         }
+      } else {
+        try {
+          const json = await response.json();
+          return showError(json.error);
+        } catch (error) {
+          console.log(error);
+          return showError("Something went wrong...");
+        }
       }
     };
 
@@ -63,10 +64,12 @@ try {
       const url = formData.get("url");
       const requestUrl = downloadUrl + url;
 
-      await fetch(requestUrl)
-        .then((response) => handleResponse(response))
-        .catch((error) => showError(error));
-
+      try {
+        await fetch(requestUrl).then((response) => handleResponse(response));
+      } catch (error) {
+        console.log(error);
+        showError("Something went wrong. Try again.");
+      }
       toggleButton();
     };
   })();

@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    command: gunicorn --bind 0.0.0.0:5000 wsgi.wsgi:app
+    volumes:
+      - .:/code
+    ports:
+      - "5000:5000"
