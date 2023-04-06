@@ -5,6 +5,7 @@ from flask import (
     make_response,
     Blueprint,
     send_from_directory,
+    url_for,
 )
 
 # App modules
@@ -25,17 +26,13 @@ async def download_reddit_video():
     if not url:
         return json_response({"error": "No reddit post url was provided"}, 400)
 
-    valid_url = valid_reddit_post(url)
-    if not valid_url:
-        return json_response({"error": "Invalid reddit post url"}, 400)
-
     try:
-        media_path = await get_video_path(valid_url)
+        media_path = await get_video_path(url)
     except Exception as e:
         return json_response({"error": str(e)}, 500)
 
-    media_url = url_for()
-    return json_response({"media_url": str(e)}, 200)
+    media_url = url_for("views.media.media_url", filename=media_path)
+    return json_response({"media": media_url}, 200)
 
 
 @ajax_bp.route("/set-theme", methods=["POST"])
@@ -48,10 +45,3 @@ def set_theme():
     max_age = 86400  # 1 day
     response.set_cookie("theme", value=theme, max_age=max_age)
     return response
-
-
-@ajax_bp.route("/media/<path:filename>")
-def media(filename):
-    return send_from_directory(
-        ajax_bp.config["UPLOAD_FOLDER"], filename, as_attachment=True
-    )

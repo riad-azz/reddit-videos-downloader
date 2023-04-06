@@ -16,7 +16,7 @@ media_bp = Blueprint("media", __name__, url_prefix="/media")
 
 
 @media_bp.route("/<path:filename>")
-def media(filename):
+def media_url(filename):
     return send_from_directory(
         VIDEOS_FOLDER,
         filename,

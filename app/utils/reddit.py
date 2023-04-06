@@ -17,6 +17,14 @@ def sanitize_text(text: str) -> str:
     return re.sub(r"[^\w\s-]", "", text)
 
 
+def get_filename(post_url: str) -> str:
+    url_parts = post_url.split("/")
+    post_id = sanitize_text(url_parts[6])
+    post_title = sanitize_text(url_parts[7])
+    filename = post_id + "_" + post_title + ".mp4"
+    return filename
+
+
 def valid_reddit_post(url: str) -> str | None:
     pattern = r"(?:https?://)?(?:www\.)?reddit\.com/r/\w+/comments/\w+/?"
     match = re.match(pattern, url)
@@ -63,18 +71,12 @@ def format_video_json(post_obj: dict) -> dict:
     if not secure_media:
         raise Exception("This post does not provide secure video source.")
 
-    author = sanitize_text(post_data["author_fullname"])
-    temp_title = sanitize_text(post_data["title"]).split(" ")
-    title = "_".join(temp_title)
-    filename = author + title + ".mp4"
-
     video_info = secure_media["reddit_video"]
     video_url = video_info["fallback_url"]
     temp_url = "/".join(video_url.split("/")[:4])
     audio_url = temp_url + "/DASH_audio.mp4"
 
     video_obj = {
-        "filename": filename,
         "video_url": video_url,
         "audio_url": audio_url,
     }
@@ -115,12 +117,17 @@ async def download_media(
 
 
 async def get_video_path(post_url: str) -> str:
-    post_json = await get_json(post_url)
-    video_obj = format_video_json(post_json)
-    filename = video_obj["filename"]
+    valid_url = valid_reddit_post(post_url)
+    if not valid_url:
+        raise Exception("Invalid reddit post url")
+
+    filename = get_filename(post_url)
     video_exist = is_video_exist(filename)
     if video_exist:
-        return filename, VIDEOS_FOLDER
+        return filename
+
+    post_json = await get_json(valid_url)
+    video_obj = format_video_json(post_json)
     video_url = video_obj["video_url"]
     audio_url = video_obj["audio_url"]
     # Wait for the file to download and be saved
@@ -129,4 +136,4 @@ async def get_video_path(post_url: str) -> str:
         audio_url=audio_url,
         filename=filename,
     )
-    return filename, VIDEOS_FOLDER
+    return filename

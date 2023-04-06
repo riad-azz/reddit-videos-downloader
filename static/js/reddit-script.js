@@ -21,12 +21,14 @@ try {
     };
 
     const handleResponse = async (response) => {
-      if (response.status < 200 || response.status > 299) {
-        const json = await response.json();
-        if (json.error) {
-          return showError(json.error);
-        }
+      const json = await response.json();
+
+      if (response.status != 200) {
+        print("lol");
+        return showError(json.error);
       } else {
+        window.location = json.media;
+
         hideError();
       }
     };
