@@ -6,10 +6,10 @@
 {% endblock title %}
 {% block content %}
   <div class="max-w-2xl mx-auto">
+    {{ input.error(id="error-message") }}
+
     <form
       id="download-form"
-      method="POST"
-      action="/download/"
       data-csrf-token="{{ csrf_token() }}"
       class="flex gap-4"
     >

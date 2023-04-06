@@ -9,7 +9,6 @@ from tempfile import NamedTemporaryFile
 # App modules
 from app import BASE_DIR
 
-
 VIDEOS_FOLDER = os.path.join(BASE_DIR, "media/videos")
 TEMP_FOLDER = os.path.join(BASE_DIR, "media/temp")
 
@@ -40,9 +39,14 @@ async def get_buffer(url: str) -> NamedTemporaryFile:
 
 
 async def get_json(url: str) -> dict:
-    response = requests.get(url)
+    json_url = url + ".json"
+    headers = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
+    }
+    response = requests.get(json_url, headers=headers)
     if response.status_code != 200:
-        raise Exception("Could not fetch the video")
+        print(response.status_code)
+        raise Exception("Could not fetch the video. Too many requests.")
     return response.json()
 
 
@@ -110,16 +114,19 @@ async def download_media(
         os.unlink(audio_file.name)
 
 
-async def download_video(post_url: str) -> str:
+async def get_video_path(post_url: str) -> str:
     post_json = await get_json(post_url)
     video_obj = format_video_json(post_json)
     filename = video_obj["filename"]
     video_exist = is_video_exist(filename)
     if video_exist:
-        file_path = os.path.join(VIDEOS_FOLDER, filename)
-        return file_path
-    else:
-        video_url = video_obj["video_url"]
-        audio_url = video_obj["audio_url"]
-        file_path = await download_media(video_url=video_url, audio_url=audio_url)
-        return file_path
+        return filename, VIDEOS_FOLDER
+    video_url = video_obj["video_url"]
+    audio_url = video_obj["audio_url"]
+    # Wait for the file to download and be saved
+    await download_media(
+        video_url=video_url,
+        audio_url=audio_url,
+        filename=filename,
+    )
+    return filename, VIDEOS_FOLDER

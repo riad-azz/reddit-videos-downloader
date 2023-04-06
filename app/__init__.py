@@ -9,7 +9,9 @@ from pathlib import Path
 from app import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+MEDIA_DIR = os.path.join(BASE_DIR, "MEDIA")
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
 
