@@ -5,6 +5,7 @@ Flask-Cors
 Flask-WTF
 ffmpeg-python
 python-dotenv
+xmltodict
 requests
 cssmin
 jsmin

@@ -5,43 +5,42 @@ import xml.etree.ElementTree as ET
 from .errors import ServerError, BadRequest
 
 
-def format_media_mdp(mpd_xml: str):
-    root = ET.fromstring(mpd_xml)
+def format_media_mpd(mpd_xml: str):
+    mpd_dict = xmltodict.parse(mpd_xml)
+    video_list = list()
 
-    # Get the media presentation duration
-    duration_str = root.attrib["mediaPresentationDuration"]
-    duration = float(duration_str[2:-1])  # Extract the duration value as a float
+    duration = float(mpd_dict["MPD"]["@mediaPresentationDuration"][2:-1])
+    adaptation_sets = mpd_dict["MPD"]["Period"]["AdaptationSet"]
 
-    # Get the video representation information
-    video_reprs = list()
-    video_adaptation_set = root.find('.//AdaptationSet[@contentType="video"]')
-    for repr_elem in video_adaptation_set.findall("Representation"):
-        repr_info = {
-            "id": repr_elem.attrib["id"],
-            "width": int(repr_elem.attrib["width"]),
-            "height": int(repr_elem.attrib["height"]),
-            "bandwidth": int(repr_elem.attrib["bandwidth"]),
-            "codecs": repr_elem.attrib["codecs"],
-            "frame_rate": int(repr_elem.attrib["frameRate"]),
+    audio_set = adaptation_sets[1]
+    audio_repr = audio_set["Representation"]
+    base_url = audio_repr["BaseURL"]
+    bandwidth = int(audio_repr["@bandwidth"])
+    sampling_rate = audio_repr["@audioSamplingRate"]
+    audio_info = {
+        "url": base_url,
+        "bandwidth": bandwidth,
+        "samplingRate": sampling_rate,
+    }
+
+    videos_set = adaptation_sets[0]
+    for representation in videos_set["Representation"]:
+        bandwidth = int(representation["@bandwidth"])
+        height = int(representation["@height"])
+        width = int(representation["@width"])
+        base_url = representation["BaseURL"]
+        video_info = {
+            "url": base_url,
+            "height": height,
+            "width": width,
+            "bandwidth": bandwidth,
         }
-        video_reprs.append(repr_info)
-
-    # Get the audio representation information
-    audio_reprs = list()
-    audio_adaptation_set = root.find('.//AdaptationSet[@contentType="audio"]')
-    for repr_elem in audio_adaptation_set.findall("Representation"):
-        repr_info = {
-            "id": repr_elem.attrib["id"],
-            "bandwidth": int(repr_elem.attrib["bandwidth"]),
-            "codecs": repr_elem.attrib["codecs"],
-            "audio_sampling_rate": int(repr_elem.attrib["audioSamplingRate"]),
-        }
-        audio_reprs.append(repr_info)
+        video_list.append(video_info)
 
     result = {
-        "videos": video_reprs,
-        "audios": audio_reprs,
         "duration": duration,
+        "video": video_list,
+        "audio": audio_info,
     }
     return result
 
