@@ -19,9 +19,6 @@ COPY ./requirements.txt .
 # Intall packages
 RUN pip install -r requirements.txt
 
-# Expose port 5000 for the Flask app
-EXPOSE 5000
-
 # Start the Flask app : gunicorn --bind 0.0.0.0:5000 wsgi.wsgi:app
 # Copy project
 COPY . .

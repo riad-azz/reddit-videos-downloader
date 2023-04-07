@@ -5,6 +5,24 @@ from flask_assets import Environment, Bundle
 # Other modules
 import os
 import shutil
+import secrets
+
+NAMES_USED = list()
+
+
+def random_name(length: int = 8):
+    name = secrets.token_hex(length)
+    while name in NAMES_USED:
+        name = secrets.token_hex(length)
+    return name
+
+
+def generate_asset_path(extension: str = "js", path: str = "assets"):
+    if not path.endswith("/"):
+        path + "/"
+    asset_path = path + "/" + random_name() + "." + extension
+    return asset_path
+
 
 assets = Environment(current_app)
 assets.cache = True
@@ -17,7 +35,7 @@ assets.register(
     Bundle(
         "css/main.css",
         "css/style.css",
-        output="gen/style.css",
+        output=generate_asset_path("css"),
         filters="cssmin",
     ),
 )
@@ -27,7 +45,7 @@ assets.register(
     "js_head",
     Bundle(
         "js/theme.js",
-        output="gen/head.js",
+        output=generate_asset_path("js"),
         filters="jsmin",
     ),
 )
@@ -36,7 +54,7 @@ assets.register(
     "js_defer",
     Bundle(
         "js/main.js",
-        output="gen/defer.js",
+        output=generate_asset_path("js"),
         filters="jsmin",
     ),
 )
@@ -45,7 +63,7 @@ assets.register(
     "reddit_script",
     Bundle(
         "js/reddit-script.js",
-        output="gen/reddit-script.js",
+        output=generate_asset_path("js"),
         filters="jsmin",
     ),
 )
@@ -54,6 +72,9 @@ assets.register(
 CACHE_DIR = os.path.join(current_app.static_folder, ".webassets-cache")
 if os.path.exists(CACHE_DIR):
     shutil.rmtree(CACHE_DIR)
+OLD_DIR = os.path.join(current_app.static_folder, "assets")
+if os.path.exists(OLD_DIR):
+    shutil.rmtree(OLD_DIR)
 
 
 # CACHE STATIC FILES
