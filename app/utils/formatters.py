@@ -1,5 +1,5 @@
 # Other modules
-import xml.etree.ElementTree as ET
+import xmltodict
 
 # App modules
 from .errors import ServerError, BadRequest
