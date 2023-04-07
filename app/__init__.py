@@ -14,8 +14,7 @@ STATIC_DIR = BASE_DIR / "static"
 MEDIA_DIR = BASE_DIR / "MEDIA"
 TEMPLATE_DIR = BASE_DIR / "templates"
 
-if not os.path.exists(BASE_DIR / "media"):
-    os.makedirs(BASE_DIR / "media/videos")
+if not os.path.exists(BASE_DIR / "media/temp"):
     os.makedirs(BASE_DIR / "media/temp")
 
 

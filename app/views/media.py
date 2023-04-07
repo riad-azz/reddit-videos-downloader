@@ -1,7 +1,8 @@
 # Flask modules
 from flask import (
     Blueprint,
-    send_from_directory,
+    send_file,
+    after_this_request,
 )
 from flask_cors import cross_origin
 
@@ -21,11 +22,17 @@ media_bp = Blueprint("media", __name__, url_prefix="/media")
 @limiter.limit("10 per 1 minutes")
 @cross_origin()
 def media_url(filename):
-    return (
-        send_from_directory(
-            VIDEOS_FOLDER,
-            filename,
-            as_attachment=True,
-        ),
-        200,
+    @after_this_request
+    def remove_file(response):
+        try:
+            if os.path.exists(filename):
+                os.remove(filename)
+        except Exception as error:
+            print("Error removing or closing downloaded file handle", error)
+        return response
+
+    return send_file(
+        VIDEOS_FOLDER,
+        filename,
+        as_attachment=True,
     )

@@ -59,11 +59,20 @@ try {
       const formData = new FormData(downloadForm);
       const postUrl = formData.get("url");
 
+      // try {
+      //   await fetchVideo(postUrl);
+      // } catch (e) {
+      //   console.error(e);
+      //   showError();
+      // }
       try {
-        await fetchVideo(postUrl);
-      } catch (e) {
-        console.error(e);
-        showError();
+        const link = document.createElement("a");
+        link.href = "/ajax/download?url=" + postUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.log(error);
       }
 
       toggleButton();

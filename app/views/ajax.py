@@ -1,17 +1,19 @@
 # Flask modules
+import os
 from flask import (
     abort,
     request,
-    make_response,
     Blueprint,
-    url_for,
+    send_file,
+    make_response,
+    after_this_request,
 )
 
 
 # App modules
 from app.extensions.flask_limiter import limiter
 from app.utils.response import json_response
-from app.utils.reddit import get_video_path, download_video
+from app.utils.reddit import download_video
 from app.utils.errors import BadRequest
 
 ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
@@ -24,14 +26,16 @@ async def download_reddit_video():
     if not url:
         raise BadRequest("No reddit post url was provided.")
 
-    media_path = await get_video_path(url)
-    if media_path:
-        media_url = url_for("views.media.media_url", filename=media_path)
-        return json_response({"media": media_url})
+    media_file = await download_video(
+        video_url="https://v.redd.it/f6giymkr9hsa1/DASH_220.mp4",
+        audio_url="https://v.redd.it/f6giymkr9hsa1/DASH_audio.mp4",
+    )
 
-    media_path = await download_video(url)
-    media_url = url_for("views.media.media_url", filename=media_path)
-    return json_response({"media": media_url})
+    return send_file(
+        media_file,
+        download_name="potato.mp4",
+        as_attachment=True,
+    )
 
 
 @ajax_bp.route("/set-theme", methods=["POST"])
