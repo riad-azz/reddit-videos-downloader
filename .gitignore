@@ -3,7 +3,7 @@ venv/
 .vscode/
 *.db
 **__pycache__
-**gen/
+**assets/
 **.webassets-cache/
 ffmpeg.exe
 **.mp4

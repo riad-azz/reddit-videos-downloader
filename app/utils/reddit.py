@@ -8,10 +8,15 @@ from tempfile import NamedTemporaryFile
 
 # App modules
 from app import BASE_DIR
+from .formatters import format_video_json
 from .errors import ServerError, BadRequest, HTTPException
 
 VIDEOS_FOLDER = BASE_DIR / "media/videos"
 TEMP_FOLDER = BASE_DIR / "media/temp"
+
+HEADERS = {
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
+}
 
 
 def sanitize_text(text: str) -> str:
@@ -22,7 +27,7 @@ def get_filename(post_url: str) -> str:
     url_parts = post_url.split("/")
     post_id = sanitize_text(url_parts[6])
     post_title = sanitize_text(url_parts[7])
-    filename = post_id + "_" + post_title + ".mp4"
+    filename = post_title + "_" + post_id + ".mp4"
     return filename
 
 
@@ -42,7 +47,7 @@ def is_video_exist(filename: str) -> bool:
 
 
 async def get_media_buffer(url: str) -> NamedTemporaryFile:
-    response = requests.get(url)
+    response = requests.get(url, headers=HEADERS)
     if response.status_code == 404:
         raise BadRequest("404 Post media files not found.")
     if response.status_code != 200:
@@ -54,10 +59,7 @@ async def get_media_buffer(url: str) -> NamedTemporaryFile:
 
 async def get_post_json(url: str) -> dict:
     json_url = url + ".json"
-    headers = {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0"
-    }
-    response = requests.get(json_url, headers=headers)
+    response = requests.get(json_url, headers=HEADERS)
     if response.status_code != 200:
         raise ServerError("Could not connect to reddit.com.")
 
@@ -65,35 +67,6 @@ async def get_post_json(url: str) -> dict:
         raise BadRequest("404 Post was not found.")
 
     return response.json()
-
-
-def format_video_json(post_obj: dict) -> dict:
-    try:
-        post_data = post_obj[0]["data"]["children"][0]["data"]
-    except:
-        raise ServerError("Could not read the post json.")
-
-    if post_data.get("removed_by_category", "") == "deleted":
-        raise BadRequest("Yikes! looks like this post was deleted.")
-
-    if not post_data.get("is_video"):
-        raise BadRequest("This post does not contain a video.")
-
-    secure_media = post_data.get("secure_media")
-    if not secure_media:
-        raise BadRequest("This post does not provide secure video source.")
-
-    video_info = secure_media["reddit_video"]
-    video_url = video_info["fallback_url"]
-    temp_url = "/".join(video_url.split("/")[:4])
-    audio_url = temp_url + "/DASH_audio.mp4"
-
-    video_obj = {
-        "video_url": video_url,
-        "audio_url": audio_url,
-    }
-
-    return video_obj
 
 
 async def download_media(

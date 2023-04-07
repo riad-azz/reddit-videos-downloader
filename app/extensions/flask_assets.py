@@ -7,13 +7,14 @@ import os
 import shutil
 import secrets
 
-NAMES_USED = list()
+NAMES_USED = set()
 
 
 def random_name(length: int = 8):
     name = secrets.token_hex(length)
     while name in NAMES_USED:
         name = secrets.token_hex(length)
+        NAMES_USED.add(name)
     return name
 
 
