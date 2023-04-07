@@ -5,10 +5,12 @@ import xmltodict
 # App modules
 from .errors import ServerError, BadRequest
 
+DOWNLOAD_ROUTE = "/ajax/download"
+
 
 def bandwidth_to_size(bandwidth: int, duration: float) -> float:
     size = (bandwidth / 8) * duration
-    return round(size / 1_048_576, 2)
+    return size / 1048576
 
 
 def sanitize_text(text: str) -> str:
@@ -40,11 +42,13 @@ def format_post_json(post_obj: dict) -> dict:
 
     title = post_data["title"]
     sanitized_title = sanitize_text(title)
+    duration = int(video_info["duration"])
     url = post_data["url"]
     dash_url = video_info["dash_url"]
 
     post_json = {
         "title": sanitized_title,
+        "duration": duration,
         "url": url,
         "dash_url": dash_url,
     }
@@ -55,7 +59,6 @@ def format_post_json(post_obj: dict) -> dict:
 def format_mpd(mpd_xml: str, post_url: str):
     mpd_dict = xmltodict.parse(mpd_xml)
 
-    duration = float(mpd_dict["MPD"]["@mediaPresentationDuration"][2:-1])
     adaptation_sets = mpd_dict["MPD"]["Period"]["AdaptationSet"]
 
     try:
@@ -64,12 +67,10 @@ def format_mpd(mpd_xml: str, post_url: str):
         audio_url = post_url + "/" + audio_repr["BaseURL"]
         audio_bandwidth = int(audio_repr["@bandwidth"])
         audio_sampling_rate = audio_repr["@audioSamplingRate"]
-        audio_size = bandwidth_to_size(audio_bandwidth, duration)
         audio_info = {
             "url": audio_url,
             "bandwidth": audio_bandwidth,
             "samplingRate": audio_sampling_rate,
-            "size": audio_size,
         }
     except:
         raise ServerError("No audio found for this post")
@@ -79,24 +80,48 @@ def format_mpd(mpd_xml: str, post_url: str):
         videos_set = adaptation_sets[0]
         for representation in videos_set["Representation"]:
             video_url = post_url + "/" + representation["BaseURL"]
-            video_height = int(representation["@height"])
-            video_width = int(representation["@width"])
+            video_height = representation["@height"]
+            video_width = representation["@width"]
             video_bandwidth = int(representation["@bandwidth"])
-            video_size = bandwidth_to_size(video_bandwidth, duration)
             video_info = {
                 "url": video_url,
                 "height": video_height,
                 "width": video_width,
                 "bandwidth": video_bandwidth,
-                "size": video_size,
             }
             video_list.append(video_info)
     except:
         raise ServerError("Could not fetch video info for this post")
 
     result = {
-        "duration": duration,
-        "video": video_list,
+        "videos": video_list,
         "audio": audio_info,
     }
     return result
+
+
+def format_video_info(title: str, duration: int, mpd_json: dict) -> dict:
+    video_info = dict
+
+    audio_url = mpd_json["audio"]["url"]
+
+    videos = list()
+    for video in mpd_json["videos"]:
+        video_url = video["url"]
+        quality = video["height"] + "p"
+        download_url = (
+            f"{DOWNLOAD_ROUTE}?title={title}&video={video_url}&audio={audio_url}"
+        )
+        video_obj = {
+            "quality": quality,
+            "url": download_url,
+        }
+        videos.append(video_obj)
+
+    video_info = {
+        "title": title,
+        "duration": duration,
+        "options": videos,
+    }
+
+    return video_info

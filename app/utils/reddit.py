@@ -9,7 +9,7 @@ from tempfile import NamedTemporaryFile
 # App modules
 from app import BASE_DIR
 from .http import get_media_bytes, get_post_json, get_post_mpd
-from .formatters import format_post_json, format_mpd
+from .formatters import format_post_json, format_mpd, format_video_info
 from .errors import ServerError, BadRequest, HTTPException
 
 TEMP_FOLDER = BASE_DIR / "media/temp"
@@ -62,7 +62,7 @@ async def download_video(video_url: str, audio_url: str) -> str:
 
         ffmpeg.concat(input_video, input_audio, v=1, a=1).output(
             output_file.name, loglevel="quiet"
-        ).run(overwrite_output=True, capture_stdout=False, capture_stderr=False)
+        ).run(overwrite_output=True)
 
         media_file = io.BytesIO(output_file.read())
         return media_file
@@ -88,11 +88,12 @@ async def get_video_info(post_url: str) -> dict:
     post_json = await get_post_json(valid_url)
     post_json = format_post_json(post_json)
     title = post_json["title"]
+    duration = post_json["duration"]
     url = post_json["url"]
     dash_url = post_json["dash_url"]
 
     post_mpd = await get_post_mpd(dash_url)
-    video_info = format_mpd(post_mpd, url)
-    video_info["title"] = title
+    mpd_json = format_mpd(post_mpd, url)
 
+    video_info = format_video_info(title, duration, mpd_json)
     return video_info

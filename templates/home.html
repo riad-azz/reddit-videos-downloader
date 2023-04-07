@@ -2,33 +2,31 @@
 {% import 'components/input.html' as input %}
 {% import 'components/button.html' as button %}
 {% block title %}
-  Reddit Videos Downloader
+  Reddit Video Downloader
 {% endblock title %}
 {% block content %}
   <div class="container max-w-2xl mx-auto">
     <div
-      class="flex flex-col items-center text-center mb-4 p-4 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg"
+      class="flex flex-col items-center mb-4 p-4 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg"
     >
-      <div
-        class="flex flex-wrap justify-center items-center w-full px-2 py-2 mb-2 bg-gray-200 dark:bg-gray-700 font-semibold rounded-lg"
-      >
-        <span class="tracking-wide mr-0.5 select-none">
-          https://www.reddit.com/r/funny/comments/postid/funny_title</span
-        >
+      <div class="mb-4 text-center">
+        <h1 class="text-3xl mb-1 select-none">Reddit Video Downloader</h1>
+        <p>Download Reddit video with audio</p>
       </div>
-      <span
-        >Copy and paste the reddit post link that you would like to save the
-        video from like the example above then press Download</span
-      >
-    </div>
-    <div>
-      {{ input.error(id="error-message") }}
+      <div class="w-full">
+        {{ input.error(id="error-message") }}
 
-      <form id="download-form" class="flex gap-4">
-        {{ input.text(name="url", id="url", placeholder="Paste the reddit post link here...") }}
-        {{ button.download(id="download-button") }}
-        {{ button.loading(id="loading-button") }}
-      </form>
+        <form
+          method="POST"
+          action="{{ url_for('views.pages.info_page') }}"
+          class="flex gap-4"
+        >
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          {{ input.text(name="url", id="url", placeholder="e.g. https://www.reddit.com/r/funny/comments/12eoavt/exclusive_footage_of...") }}
+          {{ button.download(id="download-button") }}
+          {{ button.loading(id="loading-button") }}
+        </form>
+      </div>
     </div>
   </div>
 {% endblock content %}

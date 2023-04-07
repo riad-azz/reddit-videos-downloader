@@ -60,15 +60,6 @@ assets.register(
     ),
 )
 
-assets.register(
-    "reddit_script",
-    Bundle(
-        "js/reddit-script.js",
-        output=generate_asset_path("js"),
-        filters="jsmin",
-    ),
-)
-
 # CLEAR FLASK-ASSETS CACHE
 CACHE_DIR = os.path.join(current_app.static_folder, ".webassets-cache")
 if os.path.exists(CACHE_DIR):

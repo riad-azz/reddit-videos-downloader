@@ -11,7 +11,11 @@ from flask import (
 # App modules
 from app.extensions.flask_limiter import limiter
 from app.utils.formatters import sanitize_text
-from app.utils.reddit import download_video, validate_audio_url, validate_video_url
+from app.utils.reddit import (
+    download_video,
+    validate_audio_url,
+    validate_video_url,
+)
 
 ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
 
@@ -27,6 +31,7 @@ async def download_reddit_video():
     valid_video = validate_video_url(video_url)
     valid_audio = validate_audio_url(audio_url)
 
+    # post_url = "https://www.reddit.com/r/PeopleFuckingDying/comments/12eoavt/exclusive_footage_of_ferocious_lion_stalking_its"
     # video_url="https://v.redd.it/f6giymkr9hsa1/DASH_220.mp4",
     # audio_url="https://v.redd.it/f6giymkr9hsa1/DASH_audio.mp4",
 

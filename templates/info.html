@@ -1,0 +1,45 @@
+{% extends 'layouts/base.html' %}
+{% import 'components/button.html' as button %}
+{% block title %}
+  Reddit Video Downloader
+{% endblock title %}
+{% block content %}
+  <div class="container max-w-2xl mx-auto">
+    <div
+      class="flex flex-col items-start mb-4 p-4 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg"
+    >
+      <div class="text-xl font-semibold mb-4">{{ info.title }}</div>
+      <table
+        class="w-full text-sm text-left text-gray-500 dark:text-gray-400 border"
+      >
+        <thead
+          class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+        >
+          <tr>
+            <th scope="col" class="w-full px-6 py-3">Quality</th>
+            <th scope="col" class="px-6 py-3">Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for video in info.options %}
+            <tr
+              class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+            >
+              <td class="w-full px-6 py-4">
+                {{ video.quality }}
+                (mp4)
+              </td>
+              <td class="px-6 py-4">
+                <a
+                  href="{{ video.url }}"
+                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  >Download</a
+                >
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}
