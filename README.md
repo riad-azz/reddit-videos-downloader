@@ -20,11 +20,11 @@ Reddit Videos Downloader is a tool that allows you to download any video from Re
 
 ## Installation & Running
 
-- Installing ffmpeg
+- FFMPEG installation
 
 You can get the latest ffmpeg from their official website here [ffmpeg.org](https://ffmpeg.org/download.html) .
 
-***NOTE: `FFMPEG` is required for the app to work***
+***NOTE: `FFMPEG` is required for the app to work unless you are using Docker then the container will install it***
 
 - Clone the repository or download the zip file and extract it
 
