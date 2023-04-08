@@ -29,13 +29,13 @@ You can get the latest ffmpeg from their official website here [ffmpeg.org](http
 - Clone the repository or download the zip file and extract it
 
 ```bash
-git clone https://github.com/riad-azz/reddit-vids-downloader.git
+git clone https://github.com/riad-azz/reddit-videos-downloader.git
 ```
 
 - Installing dependencies
 
 ```bash
-cd reddit-vids-downloader
+cd reddit-videos-downloader
 ```
 
 ```bash
