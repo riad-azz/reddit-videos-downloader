@@ -9,11 +9,18 @@
     <div
       class="flex flex-col items-center mb-4 p-4 mx-auto border border-gray-300 dark:border-gray-600 rounded-lg"
     >
-      <div class="mb-4 text-center">
-        <h1 class="text-3xl mb-1 select-none">Reddit Video Downloader</h1>
-        <p>Download Reddit video with audio</p>
+      <div class="mb-6 text-center">
+        <h1 class="text-3xl font-semibold mb-1 select-none">
+          Reddit Video Downloader
+        </h1>
+        <p class="tracking-tight">
+          Download reddit videos with sound and video easily. No software or
+          registration required. Just copy and paste the link and choose the
+          format and quality. Share your videos with others or watch them
+          offline. Enjoy Reddit's amazing content anytime, anywhere.
+        </p>
       </div>
-      <div class="w-full">
+      <div class="w-full mb-2">
         {{ input.error(id="error-message") }}
 
         <form id="download-form" class="flex gap-4">

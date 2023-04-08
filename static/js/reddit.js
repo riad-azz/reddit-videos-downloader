@@ -23,10 +23,14 @@ try {
       loadingButton.classList.toggle("hidden");
     };
 
+    const isJsonResponse = (response) => {
+      const contentType = response.headers.get("Content-Type");
+      return contentType.includes("application/json");
+    };
+
     const downloadVideo = async (filename, downloadUrl) => {
       const response = await fetch(downloadUrl);
-      const contentType = response.headers.get("Content-Type");
-      if (contentType.includes("application/json")) {
+      if (isJsonResponse(response)) {
         const data = await response.json();
         showError(data.error);
       } else {
@@ -43,18 +47,17 @@ try {
 
     const fetchVideo = async (postUrl) => {
       const requestUrl = fetchAjax + postUrl;
-      await fetch(requestUrl)
-        .then((response) => response.json())
-        .then(async (data) => {
-          if (data.success) {
-            await downloadVideo(data.filename, data.download_url);
-          } else {
-            showError(data.error);
-          }
-        })
-        .catch((error) => {
-          console.log("Error:", error);
-        });
+      const response = await fetch(requestUrl);
+      if (!isJsonResponse(response)) {
+        showError("Unexpected error from a third party.");
+      } else {
+        const data = await response.json();
+        if (data.success) {
+          await downloadVideo(data.filename, data.download_url);
+        } else {
+          showError(data.error);
+        }
+      }
     };
 
     downloadForm.onsubmit = async (event) => {
@@ -67,7 +70,8 @@ try {
         hideError();
         await fetchVideo(postUrl);
       } catch (error) {
-        console.log(error);
+        console.log(`Error : ${error}`);
+        showError("Unexpected error, something went wrong.");
       }
 
       toggleButton();
