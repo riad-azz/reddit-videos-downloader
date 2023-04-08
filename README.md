@@ -6,8 +6,6 @@ Download reddit videos with audio!!
 
 Reddit Videos Downloader is a tool that allows you to download any video from Reddit with audio and save it to your device . Whether you want to watch funny, educational, or inspirational videos offline, Reddit Videos Downloader can help you do that easily and quickly.
 
-- [ X ] TODO: Add replit website preview
-
 ## Getting Started
 
 ### Website Preview

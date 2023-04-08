@@ -3,6 +3,7 @@ from flask import Flask
 
 # Other modules
 import os
+import shutil
 from pathlib import Path
 
 # App modules
@@ -13,9 +14,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = BASE_DIR / "static"
 MEDIA_DIR = BASE_DIR / "MEDIA"
 TEMPLATE_DIR = BASE_DIR / "templates"
-
-if not os.path.exists(BASE_DIR / "media/temp"):
-    os.makedirs(BASE_DIR / "media/temp")
+TEMP_DIR = BASE_DIR / "media/temp"
+if os.path.exists(TEMP_DIR):
+    shutil.rmtree(TEMP_DIR)
+    os.makedirs(TEMP_DIR)
 
 
 def create_app(debug=False):

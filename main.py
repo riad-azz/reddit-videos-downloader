@@ -1,11 +1,21 @@
+# Other modules
+import os
+from dotenv import load_dotenv
+from argparse import ArgumentParser
+
+# App modules
 from app import create_app
 
+# Load environment variables from .env file
+load_dotenv()
+
+
 if __name__ == "__main__":
-    from argparse import ArgumentParser
+    PORT = os.getenv("PORT")
 
     parser = ArgumentParser()
     parser.add_argument(
-        "-p", "--port", default=5000, type=int, help="port to listen on"
+        "-p", "--port", default=PORT, type=int, help="port to listen on"
     )
     parser.add_argument(
         "-d", "--debug", default=False, type=bool, help="Set debug mode (True/False)"

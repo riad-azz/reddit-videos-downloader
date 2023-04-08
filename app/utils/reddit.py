@@ -31,9 +31,15 @@ async def download_video(video_url: str, audio_url: str) -> str:
         input_video = ffmpeg.input(video_file.name)
         input_audio = ffmpeg.input(audio_file.name)
 
-        ffmpeg.concat(input_video, input_audio, v=1, a=1).output(
-            output_file.name, loglevel="quiet", preset="medium", crf=23
-        ).run(overwrite_output=True)
+        # run ffmpeg asynchronously
+        process = (
+            ffmpeg.concat(input_video, input_audio, v=1, a=1)
+            .output(output_file.name, loglevel="quiet", preset="medium", crf=23)
+            .run_async(overwrite_output=True)
+        )
+
+        # wait for process to finish
+        process.wait()
 
         media_file = io.BytesIO(output_file.read())
         return media_file
