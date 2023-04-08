@@ -1,7 +1,7 @@
 # Other modules
 import io
 import os
-import re
+import shutil
 import ffmpeg
 import asyncio
 from tempfile import NamedTemporaryFile
@@ -16,10 +16,13 @@ from .errors import ServerError, HTTPException
 TEMP_FOLDER = BASE_DIR / "media/temp"
 
 
-async def download_video(video_url: str, audio_url: str) -> str:
-    video_file = NamedTemporaryFile(delete=False, suffix=".mp4", dir=TEMP_FOLDER)
-    audio_file = NamedTemporaryFile(delete=False, suffix=".mp4", dir=TEMP_FOLDER)
-    output_file = NamedTemporaryFile(delete=False, suffix=".mp4", dir=TEMP_FOLDER)
+async def download_video(video_url: str, audio_url: str, folder_name: str) -> str:
+    output_folder = TEMP_FOLDER / folder_name
+    os.makedirs(output_folder)
+
+    video_file = NamedTemporaryFile(delete=False, suffix=".mp4", dir=output_folder)
+    audio_file = NamedTemporaryFile(delete=False, suffix=".mp4", dir=output_folder)
+    output_file = NamedTemporaryFile(delete=False, suffix=".mp4", dir=output_folder)
     try:
         video_buffer, audio_buffer = await asyncio.gather(
             get_media_bytes(video_url),
@@ -57,6 +60,8 @@ async def download_video(video_url: str, audio_url: str) -> str:
         os.unlink(video_file.name)
         audio_file.close()
         os.unlink(audio_file.name)
+        if os.path.exists(output_folder):
+            shutil.rmtree(output_folder)
 
 
 async def get_video_list(post_url: str) -> dict:

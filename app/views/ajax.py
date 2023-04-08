@@ -5,14 +5,18 @@ from flask import (
     Blueprint,
     send_file,
     make_response,
+    after_this_request,
 )
+
+# Other modules
+import uuid
 
 
 # App modules
 from app.utils.errors import BadRequest
 from app.utils.response import json_response
 from app.utils.validators import validate_video_url, validate_audio_url
-from app.utils.reddit import get_video, download_video
+from app.utils.reddit import get_video, download_video, TEMP_FOLDER
 from app.extensions.flask_limiter import limiter
 from app.forms.ajax import FetchForm
 
@@ -30,14 +34,18 @@ async def download_reddit_video():
     validate_video_url(video_url)
     validate_audio_url(audio_url)
 
-    filename = title + ".mp4"
-    video_file = await download_video(video_url, audio_url)
+    folder_name = str(uuid.uuid4())
 
-    return send_file(
+    filename = title + ".mp4"
+    video_file = await download_video(video_url, audio_url, folder_name)
+
+    response = send_file(
         video_file,
         download_name=filename,
         as_attachment=True,
     )
+    response.set_cookie("temp", value=folder_name, max_age=3600)
+    return response
 
 
 @ajax_bp.route("/fetch", methods=["POST"])
