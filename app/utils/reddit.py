@@ -10,39 +10,10 @@ from tempfile import NamedTemporaryFile
 from app import BASE_DIR
 from .http import get_media_bytes, get_post_json, get_post_mpd
 from .formatters import format_post_json, format_mpd, format_video_info
-from .errors import ServerError, BadRequest, HTTPException
+from .validators import validate_post_url
+from .errors import ServerError, HTTPException
 
 TEMP_FOLDER = BASE_DIR / "media/temp"
-
-
-def validate_video_url(url: str):
-    pattern = r"https://v\.redd\.it\/\w+\/DASH_(\d+)\.mp4"
-    match = re.match(pattern, url)
-    if match:
-        valid_url = match.group()
-        return valid_url
-    else:
-        raise BadRequest("Invalid reddit audio url provided.")
-
-
-def validate_audio_url(url: str):
-    pattern = r"https://v\.redd\.it\/\w+\/DASH_audio\.mp4"
-    match = re.match(pattern, url)
-    if match:
-        valid_url = match.group()
-        return valid_url
-    else:
-        raise BadRequest("Invalid reddit audio url provided.")
-
-
-def validate_post_url(url: str) -> str:
-    pattern = r"(?:https?://)?(?:www\.)?reddit\.com/r/\w+/comments/\w+/?"
-    match = re.match(pattern, url)
-    if match:
-        valid_url = match.group()
-        return valid_url
-    else:
-        raise BadRequest("Invalid reddit post url provided.")
 
 
 async def download_video(video_url: str, audio_url: str) -> str:

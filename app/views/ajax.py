@@ -9,16 +9,12 @@ from flask import (
 
 
 # App modules
-from app.utils.reddit import (
-    get_video,
-    download_video,
-    validate_video_url,
-    validate_audio_url,
-)
-from app.forms.ajax import FetchForm
 from app.utils.errors import BadRequest
 from app.utils.response import json_response
+from app.utils.validators import validate_video_url, validate_audio_url
+from app.utils.reddit import get_video, download_video
 from app.extensions.flask_limiter import limiter
+from app.forms.ajax import FetchForm
 
 ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
 
@@ -26,7 +22,7 @@ ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
 @ajax_bp.route("/download")
 @limiter.limit("10 per minutes")
 async def download_reddit_video():
-    title = request.args.get("title", "")
+    title = request.args.get("title", "reddit_video")
     video_url = request.args.get("video", "").strip()
     audio_url = request.args.get("audio", "").strip()
     if not title or not video_url or not audio_url:
