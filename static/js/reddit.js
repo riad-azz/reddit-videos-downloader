@@ -27,7 +27,10 @@ try {
     };
 
     const downloadVideo = async (filename, downloadUrl) => {
-      const response = await fetch(downloadUrl);
+      const response = await fetch(downloadUrl, {
+        method: "GET",
+        timeout: 5000, // timeout in 30 seconds
+      });
       if (isJsonResponse(response)) {
         const data = await response.json();
         showError(data.error);
@@ -46,6 +49,7 @@ try {
     const fetchVideo = async (requestUrl, formData) => {
       const response = await fetch(requestUrl, {
         method: "POST",
+        timeout: 15000, // timeout in 15 seconds
         headers: {
           "X-CSRFToken": csrfToken,
         },

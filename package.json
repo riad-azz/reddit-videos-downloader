@@ -8,7 +8,7 @@
     "pretty": "npx prettier --write ./templates/**/*.html"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "prettier": "^2.8.7",
     "prettier-plugin-jinja-template": "^0.2.0",

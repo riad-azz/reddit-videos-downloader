@@ -12,11 +12,23 @@ Reddit Videos Downloader is a tool that allows you to download any video from Re
 
 ### Website Preview
 
-- [ X ] TODO: Add website screenshots
+![webpage preview image](screenshots/sc-01.png)
+
+![webpage preview image](screenshots/sc-02.png)
+
+![webpage preview image](screenshots/sc-03.png)
+
+![webpage preview image](screenshots/sc-04.png)
 
 ## Installation & Running
 
-- Cloning the repository
+- Installing ffmpeg
+
+You can get the latest ffmpeg from their official website here [ffmpeg.org](https://ffmpeg.org/download.html) .
+
+***NOTE: `FFMPEG` is required for the app to work***
+
+- Clone the repository or download the zip file and extract it
 
 ```bash
 git clone https://github.com/riad-azz/reddit-vids-downloader.git
@@ -28,7 +40,38 @@ git clone https://github.com/riad-azz/reddit-vids-downloader.git
 cd reddit-vids-downloader
 ```
 
-- [ X ] TODO: Add installation & running instructions
+```bash
+pip install -r requirements.txt
+```
+
+- Running the app for Development & Testing
+
+```bash
+python main.py -port 5000
+
+python main.py -debug true -port 5000
+```
+
+- Running the app for Production
+
+```bash
+gunicorn --bind 0.0.0.0:5000 wsgi.wsgi:app
+```
+
+- NPM Utils
+
+```bash
+# Install dependencies
+npm install
+```
+
+```bash
+# Styling with Tailwind CSS Watch mode
+npm start
+
+# Format templates html
+npm pretty
+```
 
 ## License
 
