@@ -55,6 +55,17 @@ python main.py -debug true -port 5000
 - Running the app for Production
 
 ```bash
+# Running the app with Docker
+
+# Build & Run container
+docker-compose up -d -build
+
+# Run container
+docker-compose up -d
+```
+
+```bash
+# On Linux you can just run gunicorn
 gunicorn --bind 0.0.0.0:5000 wsgi.wsgi:app
 ```
 
