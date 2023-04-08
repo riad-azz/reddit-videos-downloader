@@ -5,8 +5,6 @@ try {
     const loadingButton = document.getElementById("loading-button");
     const errorElement = document.getElementById("error-message");
 
-    const fetchAjax = "ajax/fetch?url=";
-
     const showError = (error) => {
       error = error ?? "Something went wrong. Make a guess !!";
       errorElement.style.display = "block";
@@ -45,9 +43,14 @@ try {
       }
     };
 
-    const fetchVideo = async (postUrl) => {
-      const requestUrl = fetchAjax + postUrl;
-      const response = await fetch(requestUrl);
+    const fetchVideo = async (requestUrl, formData) => {
+      const response = await fetch(requestUrl, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        body: formData,
+      });
       if (!isJsonResponse(response)) {
         showError("Unexpected error from a third party.");
       } else {
@@ -64,11 +67,11 @@ try {
       event.preventDefault();
       toggleButton();
 
+      const requestUrl = downloadForm.action;
       const formData = new FormData(downloadForm);
-      const postUrl = formData.get("url");
       try {
         hideError();
-        await fetchVideo(postUrl);
+        await fetchVideo(requestUrl, formData);
       } catch (error) {
         console.log(`Error : ${error}`);
         showError("Unexpected error, something went wrong.");

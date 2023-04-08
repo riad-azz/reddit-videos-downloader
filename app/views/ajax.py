@@ -9,22 +9,18 @@ from flask import (
 
 
 # App modules
-from app.extensions.flask_limiter import limiter
-from app.utils.errors import BadRequest
 from app.utils.reddit import (
     get_video,
     download_video,
     validate_video_url,
     validate_audio_url,
 )
+from app.forms.ajax import FetchForm
+from app.utils.errors import BadRequest
 from app.utils.response import json_response
+from app.extensions.flask_limiter import limiter
 
 ajax_bp = Blueprint("ajax", __name__, url_prefix="/ajax")
-
-
-# post_url = "https://www.reddit.com/r/PeopleFuckingDying/comments/12eoavt/exclusive_footage_of_ferocious_lion_stalking_its"
-# video_url="https://v.redd.it/f6giymkr9hsa1/DASH_220.mp4",
-# audio_url="https://v.redd.it/f6giymkr9hsa1/DASH_audio.mp4",
 
 
 @ajax_bp.route("/download")
@@ -48,14 +44,16 @@ async def download_reddit_video():
     )
 
 
-@ajax_bp.route("/fetch")
+@ajax_bp.route("/fetch", methods=["POST"])
 @limiter.limit("10 per minutes")
 async def fetch_reddit_video():
-    url = request.args.get("url", "").strip()
-    if not url:
-        raise BadRequest("No post url was provided.")
+    form = FetchForm(request.form)
+    if not form.validate():
+        error = list(form.errors.values())[-1][-1]
+        raise BadRequest(error)
 
-    video_info = await get_video(url)
+    post_url = form.url.data
+    video_info = await get_video(post_url)
 
     filename = video_info["title"] + ".mp4"
     download_url = video_info["download_url"]

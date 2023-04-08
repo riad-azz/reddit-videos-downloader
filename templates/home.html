@@ -23,7 +23,11 @@
       <div class="w-full mb-2">
         {{ input.error(id="error-message") }}
 
-        <form id="download-form" class="flex gap-4">
+        <form
+          id="download-form"
+          action="{{ url_for('views.ajax.fetch_reddit_video') }}"
+          class="flex gap-4"
+        >
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           {{ input.text(name="url", id="url", placeholder="e.g. https://www.reddit.com/r/funny/comments/12eoavt/exclusive_footage_of...") }}
           {{ button.download(id="download-button") }}
