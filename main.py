@@ -11,7 +11,7 @@ load_dotenv()
 
 
 if __name__ == "__main__":
-    PORT = os.getenv("PORT")
+    PORT = os.getenv("PORT", 5000)
 
     parser = ArgumentParser()
     parser.add_argument(
