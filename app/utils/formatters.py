@@ -44,6 +44,8 @@ def format_post_json(post_obj: dict) -> dict:
     sanitized_title = sanitize_text(title)
     duration = int(video_info["duration"])
     url = post_data["url"]
+    video_url = video_info["fallback_url"]
+    audio_url = url + "/" + "DASH_audio.mp4"
     dash_url = video_info["dash_url"]
 
     post_json = {
@@ -51,6 +53,8 @@ def format_post_json(post_obj: dict) -> dict:
         "duration": duration,
         "url": url,
         "dash_url": dash_url,
+        "video_url": video_url,
+        "audio_url": audio_url,
     }
 
     return post_json

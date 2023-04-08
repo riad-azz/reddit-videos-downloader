@@ -82,7 +82,7 @@ async def download_video(video_url: str, audio_url: str) -> str:
         os.unlink(audio_file.name)
 
 
-async def get_video_info(post_url: str) -> dict:
+async def get_video_list(post_url: str) -> dict:
     valid_url = validate_post_url(post_url)
 
     post_json = await get_post_json(valid_url)
@@ -97,3 +97,20 @@ async def get_video_info(post_url: str) -> dict:
 
     video_info = format_video_info(title, duration, mpd_json)
     return video_info
+
+
+async def get_video(post_url: str) -> dict:
+    valid_url = validate_post_url(post_url)
+
+    post_json = await get_post_json(valid_url)
+    post_json = format_post_json(post_json)
+    title = post_json["title"]
+    video_url = post_json["video_url"]
+    audio_url = post_json["audio_url"]
+    download_url = f"/ajax/download?title={title}&video={video_url}&audio={audio_url}"
+
+    video = {
+        "title": title,
+        "download_url": download_url,
+    }
+    return video

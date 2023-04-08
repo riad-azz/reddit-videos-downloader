@@ -8,7 +8,7 @@ from flask import (
 # App modules
 from app.extensions.flask_limiter import limiter
 from app.utils.reddit import (
-    get_video_info,
+    get_video_list,
     validate_post_url,
 )
 
@@ -35,6 +35,6 @@ async def info_page():
     except:
         return render_template("empty.html")
 
-    video_info = await get_video_info(valid_url)
+    video_info = await get_video_list(valid_url)
 
     return render_template("info.html", info=video_info)
