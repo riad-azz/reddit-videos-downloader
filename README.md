@@ -20,19 +20,19 @@ Reddit Videos Downloader is a tool that allows you to download any video from Re
 
 ## Installation & Running
 
-- FFMPEG installation
+FFMPEG installation
 
 You can get the latest ffmpeg from their official website here [ffmpeg.org](https://ffmpeg.org/download.html) .
 
 ***NOTE: `FFMPEG` is required for the app to work unless you are using Docker then the container will install and you can skip this step.***
 
-- Clone the repository or download the zip file and extract it
+1. Clone the repository or download the zip file and extract it
 
 ```bash
 git clone https://github.com/riad-azz/reddit-videos-downloader.git
 ```
 
-- Installing dependencies
+2. Installing dependencies
 
 ```bash
 cd reddit-videos-downloader
@@ -42,7 +42,7 @@ cd reddit-videos-downloader
 pip install -r requirements.txt
 ```
 
-- Running the app for Development & Testing
+3. Running the app for Development & Testing
 
 ```bash
 python main.py -port 5000
@@ -50,7 +50,7 @@ python main.py -port 5000
 python main.py -debug true -port 5000
 ```
 
-- Running the app for Production
+4. Running the app for Production
 
 ```bash
 # Running the app with Docker
@@ -67,7 +67,7 @@ docker-compose up -d
 gunicorn --bind 0.0.0.0:5000 wsgi.wsgi:app
 ```
 
-- NPM Utils
+NPM Utils for styling
 
 ```bash
 # Install dependencies
